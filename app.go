@@ -320,6 +320,10 @@ var DefaultErrorHandler = func(c *Ctx, err error) error {
 //      ServerHeader: "Fiber",
 //  })
 func New(config ...Config) *App {
+	if true {
+
+	}
+
 	// Create a new app
 	app := &App{
 		// Create router stack
