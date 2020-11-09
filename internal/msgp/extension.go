@@ -176,7 +176,7 @@ func (mw *Writer) WriteExtension(e Extension) error {
 				return err
 			}
 			mw.buf[o] = mext8
-			mw.buf[o+1] = byte(uint8(l))
+			mw.buf[o+1] = byte(l)
 			mw.buf[o+2] = byte(e.ExtensionType())
 		case l < math.MaxUint16:
 			o, err := mw.require(4)
@@ -365,7 +365,7 @@ func (m *Reader) ReadExtension(e Extension) (err error) {
 			err = errExt(int8(p[2]), e.ExtensionType())
 			return
 		}
-		read = int(uint8(p[1]))
+		read = int(p[1])
 		off = 3
 
 	case mext16:
@@ -450,7 +450,7 @@ func AppendExtension(b []byte, e Extension) ([]byte, error) {
 		case l < math.MaxUint8:
 			o, n = ensure(b, l+3)
 			o[n] = mext8
-			o[n+1] = byte(uint8(l))
+			o[n+1] = byte(l)
 			o[n+2] = byte(e.ExtensionType())
 			n += 3
 		case l < math.MaxUint16:
@@ -511,7 +511,7 @@ func ReadExtensionBytes(b []byte, e Extension) ([]byte, error) {
 		sz = 16
 		off = 2
 	case mext8:
-		sz = int(uint8(b[1]))
+		sz = int(b[1])
 		typ = int8(b[2])
 		off = 3
 		if sz == 0 {

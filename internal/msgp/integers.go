@@ -103,11 +103,11 @@ func getMuint16(b []byte) uint16 {
 
 func putMuint8(b []byte, u uint8) {
 	b[0] = muint8
-	b[1] = byte(u)
+	b[1] = u
 }
 
 func getMuint8(b []byte) uint8 {
-	return uint8(b[1])
+	return b[1]
 }
 
 func getUnix(b []byte) (sec int64, nsec int32) {
@@ -142,7 +142,7 @@ func putUnix(b []byte, sec int64, nsec int32) {
 // write prefix and uint8
 func prefixu8(b []byte, pre byte, sz uint8) {
 	b[0] = pre
-	b[1] = byte(sz)
+	b[1] = sz
 }
 
 // write prefix and big-endian uint16

@@ -65,7 +65,7 @@ func (r Raw) MarshalMsg(b []byte) ([]byte, error) {
 		return AppendNil(b), nil
 	}
 	o, l := ensure(b, i)
-	copy(o[l:], []byte(r))
+	copy(o[l:], r)
 	return o, nil
 }
 
@@ -98,7 +98,7 @@ func (r Raw) EncodeMsg(w *Writer) error {
 	if len(r) == 0 {
 		return w.WriteNil()
 	}
-	_, err := w.Write([]byte(r))
+	_, err := w.Write(r)
 	return err
 }
 
@@ -147,7 +147,7 @@ func appendNext(f *Reader, d *[]byte) error {
 // MarshalJSON implements json.Marshaler
 func (r *Raw) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
-	_, err := UnmarshalAsJSON(&buf, []byte(*r))
+	_, err := UnmarshalAsJSON(&buf, *r)
 	return buf.Bytes(), err
 }
 
@@ -425,7 +425,7 @@ func ReadInt64Bytes(b []byte) (i int64, o []byte, err error) {
 			err = ErrShortBytes
 			return
 		}
-		i = int64(getMint64(b))
+		i = getMint64(b)
 		o = b[9:]
 		return
 
@@ -599,7 +599,7 @@ func ReadUint64Bytes(b []byte) (u uint64, o []byte, err error) {
 			err = ErrShortBytes
 			return
 		}
-		v := int64(getMint64(b))
+		v := getMint64(b)
 		if v < 0 {
 			err = UintBelowZero{Value: v}
 			return
@@ -803,7 +803,7 @@ func ReadExactBytes(b []byte, into []byte) (o []byte, err error) {
 			err = ErrShortBytes
 			return
 		}
-		read = uint32(big.Uint32(b[1:]))
+		read = big.Uint32(b[1:])
 		skip = 5
 
 	default:
@@ -1109,7 +1109,7 @@ func ReadIntfBytes(b []byte) (i interface{}, o []byte, err error) {
 		}
 		// last resort is a raw extension
 		e := RawExtension{}
-		e.Type = int8(t)
+		e.Type = t
 		o, err = ReadExtensionBytes(b, &e)
 		i = &e
 		return
