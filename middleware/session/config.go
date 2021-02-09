@@ -7,6 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2/utils"
 )
 
+const (
+	SourceCookie   = "cookie"
+	SourceHeader   = "header"
+	SourceURLQuery = "query"
+)
+
 // Config defines the config for middleware.
 type Config struct {
 	// Allowed session duration
@@ -16,6 +22,11 @@ type Config struct {
 	// Storage interface to store the session data
 	// Optional. Default value memory.New()
 	Storage fiber.Storage
+
+	// Source specifies where to obtain the session id
+	// Possible values: "header", "query" or "cookie"
+	// Optional. Default value "cookie".
+	Source string
 
 	// Name of the session cookie. This cookie will store session key.
 	// Optional. Default value "session_id".
@@ -49,6 +60,7 @@ type Config struct {
 // ConfigDefault is the default config
 var ConfigDefault = Config{
 	Expiration:   24 * time.Hour,
+	Source:       SourceCookie,
 	CookieName:   "session_id",
 	KeyGenerator: utils.UUIDv4,
 }
@@ -66,6 +78,9 @@ func configDefault(config ...Config) Config {
 	// Set default values
 	if int(cfg.Expiration.Seconds()) <= 0 {
 		cfg.Expiration = ConfigDefault.Expiration
+	}
+	if cfg.Source == "" {
+		cfg.Source = ConfigDefault.Source
 	}
 	if cfg.CookieName == "" {
 		cfg.CookieName = ConfigDefault.CookieName
