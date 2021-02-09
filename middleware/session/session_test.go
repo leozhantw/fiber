@@ -203,7 +203,9 @@ func Test_Session_Save(t *testing.T) {
 	t.Parallel()
 
 	// session store
-	store := New()
+	store := New(Config{
+		Source: SourceHeader,
+	})
 
 	// fiber instance
 	app := fiber.New()
@@ -221,14 +223,18 @@ func Test_Session_Save(t *testing.T) {
 	// save session
 	err := sess.Save()
 	utils.AssertEqual(t, nil, err)
-
+	utils.AssertEqual(t, 84, len(ctx.Response().Header.PeekCookie(store.CookieName)))
+	utils.AssertEqual(t, store.getSessionID(ctx), string(ctx.Response().Header.Peek(store.CookieName)))
+	utils.AssertEqual(t, store.getSessionID(ctx), string(ctx.Request().Header.Peek(store.CookieName)))
 }
 
 // go test -run Test_Session_Reset
 func Test_Session_Reset(t *testing.T) {
 	t.Parallel()
 	// session store
-	store := New()
+	store := New(Config{
+		Source: SourceHeader,
+	})
 	// fiber instance
 	app := fiber.New()
 	// fiber context
@@ -241,6 +247,8 @@ func Test_Session_Reset(t *testing.T) {
 	sess.Destroy()
 	name := sess.Get("name")
 	utils.AssertEqual(t, nil, name)
+	utils.AssertEqual(t, "", string(ctx.Response().Header.Peek(store.CookieName)))
+	utils.AssertEqual(t, "", string(ctx.Request().Header.Peek(store.CookieName)))
 }
 
 // go test -run Test_Session_Custom_Config

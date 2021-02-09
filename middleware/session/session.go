@@ -171,6 +171,11 @@ func (s *Session) setCookie() {
 
 	s.ctx.Response().Header.SetCookie(fcookie)
 	fasthttp.ReleaseCookie(fcookie)
+
+	if s.config.Source == SourceHeader {
+		s.ctx.Request().Header.SetBytesV(s.config.CookieName, []byte(s.id))
+		s.ctx.Response().Header.SetBytesV(s.config.CookieName, []byte(s.id))
+	}
 }
 
 func (s *Session) delCookie() {
@@ -197,4 +202,9 @@ func (s *Session) delCookie() {
 
 	s.ctx.Response().Header.SetCookie(fcookie)
 	fasthttp.ReleaseCookie(fcookie)
+
+	if s.config.Source == SourceHeader {
+		s.ctx.Request().Header.Del(s.config.CookieName)
+		s.ctx.Response().Header.Del(s.config.CookieName)
+	}
 }
