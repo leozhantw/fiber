@@ -38,7 +38,7 @@ func (s *Store) Get(c *fiber.Ctx) (*Session, error) {
 	var fresh bool
 
 	// Get key from cookie
-	id := c.Cookies(s.CookieName)
+	id := s.getSessionID(c)
 
 	// If no key exist, create new one
 	if len(id) == 0 {
@@ -70,6 +70,33 @@ func (s *Store) Get(c *fiber.Ctx) (*Session, error) {
 	}
 
 	return sess, nil
+}
+
+// getSessionID will returns the session id from:
+// 1. cookie
+// 2. http headers
+// 3. query string
+func (s *Store) getSessionID(c *fiber.Ctx) string {
+	id := c.Cookies(s.CookieName)
+	if len(id) > 0 {
+		return id
+	}
+
+	if s.Source == SourceHeader {
+		id = string(c.Request().Header.Peek(s.CookieName))
+		if len(id) > 0 {
+			return id
+		}
+	}
+
+	if s.Source == SourceURLQuery {
+		id = c.FormValue(s.CookieName)
+		if len(id) > 0 {
+			return id
+		}
+	}
+
+	return ""
 }
 
 // Reset will delete all session from the storage
