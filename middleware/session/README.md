@@ -106,6 +106,11 @@ type Config struct {
 	// Optional. Default value memory.New()
 	Storage fiber.Storage
 
+	// Source specifies where to obtain the session id
+	// Possible values: "header", "query" or "cookie"
+	// Optional. Default value "cookie".
+	Source string
+
 	// Name of the session cookie. This cookie will store session key.
 	// Optional. Default value "session_id".
 	CookieName string
@@ -141,6 +146,7 @@ type Config struct {
 ```go
 var ConfigDefault = Config{
 	Expiration:   24 * time.Hour,
+	Source:       SourceCookie,
 	CookieName:   "session_id",
 	KeyGenerator: utils.UUID,
 }
